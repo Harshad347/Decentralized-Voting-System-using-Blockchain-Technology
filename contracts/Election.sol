@@ -10,10 +10,7 @@ contract ElectionFactory {
 
     ElectionDetails[] public elections;
 
-    function createElection(
-        string memory electionName,
-        string memory electionPost
-    ) public {
+    function createElection(string memory electionName, string memory electionPost) public {
         address newElection = new Election(
             msg.sender,
             electionName,
@@ -31,10 +28,7 @@ contract ElectionFactory {
 contract Election {
     address adminAddress;
     modifier onlyOwner() {
-        require(
-            msg.sender == adminAddress,
-            "You dont have rights to perform this operation !"
-        );
+        require( msg.sender == adminAddress, "Only ADMIN have rights to perform this operation !");
         _;
     }
 
@@ -68,11 +62,7 @@ contract Election {
         return (nameOfElection, nameOfPost);
     }
 
-    function Election(
-        address creator,
-        string electionName,
-        string electionPost
-    ) public {
+    function Election(address creator, string electionName, string electionPost) public {
         adminAddress = creator;
         nameOfElection = electionName;
         nameOfPost = electionPost;
@@ -90,24 +80,13 @@ contract Election {
         electionState = 3;
     }
 
-    function registerVoter(string memory _name, uint256 _voterId)
-        public
-        returns (uint256)
+    function registerVoter(string memory _name, uint256 _voterId) public returns (uint256)
     {
         require(electionState == 1, "This is not Registration Phase.");
         address _accountAddress = msg.sender;
-        require(
-            _accountAddress != adminAddress,
-            "You cannot use owner address to register."
-        );
-        require(
-            checkIfAddressExist(_accountAddress),
-            "This Account Address is already registered"
-        );
-        require(
-            checkIfVoterIdExist(_voterId),
-            "This Voter Id is already registered."
-        );
+        require( _accountAddress != adminAddress, "You cannot use owner address to register.");
+        require(checkIfAddressExist(_accountAddress), "This Account Address is already registered");
+        require(checkIfVoterIdExist(_voterId), "This Voter Id is already registered.");
         voterCount++;
         voters[voterCount] = Voter(
             _name,
@@ -120,10 +99,7 @@ contract Election {
         emit VoterCreated(_name, _voterId, _accountAddress);
     }
 
-    function registerCandidate(string memory _name, string memory _party)
-        public
-        onlyOwner
-        returns (uint256)
+    function registerCandidate(string memory _name, string memory _party) public onlyOwner returns (uint256)
     {
         require(electionState == 1, "This is not Registration Phase.");
         require(checkIfPartyExist(_party), "This Party is already registered.");
@@ -134,19 +110,10 @@ contract Election {
 
     function vote(uint256 _voterId, uint256 _candidateId) public {
         require(electionState == 2, "This is not Voting Phase.");
-        require(
-            !checkIfVoterIdExist(_voterId),
-            "You are not registered to vote."
-        );
-        require(
-            _candidateId > 0 && _candidateId <= candidateCount,
-            "Candidate selection is invalid."
-        );
+        require(!checkIfVoterIdExist(_voterId), "You are not registered to vote.");
+        require(_candidateId > 0 && _candidateId <= candidateCount, "Candidate selection is invalid.");
         uint256 id = returnCount(_voterId);
-        require(
-            voters[id].accountAddress == msg.sender,
-            "Please vote with registered Account Address."
-        );
+        require(voters[id].accountAddress == msg.sender, "Please vote with registered Account Address.");
         require(voters[id].authorized, "You are not authorize to vote.");
         require(!voters[id].voted, "You have already Voted.");
         candidates[_candidateId].noOfVotes++;
@@ -156,10 +123,7 @@ contract Election {
 
     function authorizeVoter(uint256 _voterId) public onlyOwner {
         require(electionState == 1, "This is not Registration Phase.");
-        require(
-            !checkIfVoterIdExist(_voterId),
-            "This voter ID is not registered."
-        );
+        require(!checkIfVoterIdExist(_voterId),"This voter ID is not registered.");
         uint256 id = returnCount(_voterId);
         voters[id].authorized = true;
     }
@@ -167,10 +131,7 @@ contract Election {
     function returnCount(uint256 _inputVoterId) private returns (uint256) {
         for (uint256 i = 1; i <= voterCount; i++) {
             uint256 idVoter = voters[i].voterId;
-            if (
-                keccak256(abi.encodePacked(idVoter)) ==
-                keccak256(abi.encodePacked(_inputVoterId))
-            ) {
+            if ( keccak256(abi.encodePacked(idVoter)) == keccak256(abi.encodePacked(_inputVoterId)) ) {
                 return i;
                 break;
             }
@@ -181,10 +142,7 @@ contract Election {
     function checkIfVoterIdExist(uint256 _inputVoterId) private returns (bool) {
         for (uint256 i = 1; i <= voterCount; i++) {
             uint256 idVoter = voters[i].voterId;
-            if (
-                keccak256(abi.encodePacked(idVoter)) ==
-                keccak256(abi.encodePacked(_inputVoterId))
-            ) {
+            if ( keccak256(abi.encodePacked(idVoter)) == keccak256(abi.encodePacked(_inputVoterId)) ) {
                 return false;
                 break;
             }
@@ -192,16 +150,11 @@ contract Election {
         return true;
     }
 
-    function checkIfAddressExist(address _inputAccountAddress)
-        private
-        returns (bool)
+    function checkIfAddressExist(address _inputAccountAddress) private returns (bool)
     {
         for (uint256 i = 1; i <= voterCount; i++) {
             address addressAccount = voters[i].accountAddress;
-            if (
-                keccak256(abi.encodePacked(addressAccount)) ==
-                keccak256(abi.encodePacked(_inputAccountAddress))
-            ) {
+            if ( keccak256(abi.encodePacked(addressAccount)) == keccak256(abi.encodePacked(_inputAccountAddress)) ) {
                 return false;
                 break;
             }
@@ -209,16 +162,11 @@ contract Election {
         return true;
     }
 
-    function checkIfPartyExist(string memory _inputParty)
-        private
-        returns (bool)
+    function checkIfPartyExist(string memory _inputParty) private returns (bool)
     {
         for (uint256 i = 1; i <= candidateCount; i++) {
             string partyName = candidates[i].party;
-            if (
-                keccak256(abi.encodePacked(partyName)) ==
-                keccak256(abi.encodePacked(_inputParty))
-            ) {
+            if ( keccak256(abi.encodePacked(partyName)) == keccak256(abi.encodePacked(_inputParty)) ) {
                 return false;
                 break;
             }
