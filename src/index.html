@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVote</title>
+</head>
+<body>
+    <div id="loader">
+        <p class="text-center">Loading...</p>
+    </div>
+    <p id="accountAddress" class="text-center"></p>
+    <hr>
+    <div id="voterContent">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Voter ID</th>
+                    <th scope="col">Account Address</th>
+                </tr>
+            </thead>
+            <tbody id="voterRegistered"></tbody>
+        </table>
+    </div>
+    <hr>
+    <form onSubmit="App.registerVoter(); return false;">
+        <input type="text" id="input-name" placeholder="Enter Name">
+        <input type="text" id="input-voterId" placeholder="Enter Voter ID">
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
