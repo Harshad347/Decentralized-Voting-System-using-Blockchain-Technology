@@ -33,7 +33,7 @@ App = {
   listenForEvents: function () {
     App.contracts.Election.deployed().then(function (instance) {
       instance
-        .voterCreated(
+        .candidateCreated(
           {},
           {
             fromBlock: 0,
@@ -50,10 +50,10 @@ App = {
   render: function () {
     var electionInstance;
     var loader = $("#loader");
-    var voterContent = $("#voterContent");
+    var candidateContent = $("#candidateContent");
 
     loader.show();
-    voterContent.hide();
+    candidateContent.hide();
 
     web3.eth.getCoinbase(function (err, account) {
       if (err === null) {
@@ -65,41 +65,34 @@ App = {
     App.contracts.Election.deployed()
       .then(function (instance) {
         electionInstance = instance;
-        return electionInstance.voterCount();
+        return electionInstance.candidateCount();
       })
-      .then(function (voterCount) {
-        var voterRegistered = $("#voterRegistered");
-        voterRegistered.empty();
+      .then(function (candidateCount) {
+        var candidateRegistered = $("#candidateRegistered");
+        candidateRegistered.empty();
 
-        for (var i = 1; i <= voterCount; i++) {
-          electionInstance.voters(i).then(function (voter) {
-            var name = voter[0];
-            var voterId = voter[1];
-            var accountAddress = voter[2];
+        for (var i = 1; i <= candidateCount; i++) {
+          electionInstance.candidates(i).then(function (candidate) {
+            var name = candidate[0];
+            var party = candidate[1];
 
-            var voterTemplate =
-              "<tr><td>" +
-              name +
-              "</td><td>" +
-              voterId +
-              "</td><td>" +
-              accountAddress +
-              "</td></tr>";
-            voterRegistered.append(voterTemplate);
+            var candidateTemplate =
+              "<tr><td>" + name + "</td><td>" + party + "</td></tr>";
+            candidateRegistered.append(candidateTemplate);
           });
         }
-        return electionInstance.voters(App.account);
+        return electionInstance.candidates(App.account);
       });
     loader.hide();
-    voterContent.show();
+    candidateContent.show();
   },
 
-  registerVoter: function () {
+  registerCandidate: function () {
     var name = $("#input-name").val();
-    var voterId = $("#input-voterId").val();
+    var party = $("#input-party").val();
     App.contracts.Election.deployed()
       .then(function (instance) {
-        return instance.registerVoter(name, voterId, { from: App.account });
+        return instance.registerCandidate(name, party, { from: App.account });
       })
       .catch(function (err) {
         console.error(err);

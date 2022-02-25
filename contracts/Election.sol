@@ -6,79 +6,45 @@ contract Election {
     modifier onlyOwner() {
         require(
             msg.sender == adminAddress,
-            "You don't have rights to perform this operation !"
+            "You dont have rights to perform this operation !"
         );
         _;
     }
 
-    struct Voter {
+    struct Candidate {
         string name;
-        uint256 voterId;
-        address accountAddress;
-        bool authorized;
-        bool voted;
+        string party;
+        uint256 noOfVotes;
         bool exists;
     }
 
-    mapping(uint256 => Voter) public voters;
-    uint256 public voterCount = 0;
+    mapping(uint256 => Candidate) public candidates;
+    uint256 public candidateCount = 0;
 
     constructor() public {
         adminAddress = msg.sender;
     }
 
-    function registerVoter(string memory _name, uint256 _voterId)
+    function registerCandidate(string memory _name, string memory _party)
         public
+        onlyOwner
         returns (uint256)
     {
-        address _accountAddress = msg.sender;
-        require(
-            adminAddress != _accountAddress,
-            "You cannot use owner address to register."
-        );
-        require(
-            checkIfAddressExist(_accountAddress),
-            "This Account Address is already registered"
-        );
-        require(
-            checkIfVoterIdExist(_voterId),
-            "This Voter Id is already registered."
-        );
-        voterCount++;
-        voters[voterCount] = Voter(
-            _name,
-            _voterId,
-            _accountAddress,
-            false,
-            false,
-            true
-        );
-        emit voterCreated(_name, _voterId, _accountAddress);
+        require(checkIfPartyExist(_party), "This Party is already registered.");
+        candidateCount++;
+        candidates[candidateCount] = Candidate(_name, _party, 0, true);
+        emit CandidateCreated(_name, _party);
     }
 
-    function checkIfVoterIdExist(uint256 _inputVoterId) private returns (bool) {
-        for (uint256 i = 1; i <= voterCount; i++) {
-            uint256 idVoter = voters[i].voterId;
-            if (
-                keccak256(abi.encodePacked(idVoter)) ==
-                keccak256(abi.encodePacked(_inputVoterId))
-            ) {
-                return false;
-                break;
-            }
-        }
-        return true;
-    }
-
-    function checkIfAddressExist(address _inputAccountAddress)
+    function checkIfPartyExist(string memory _inputParty)
         private
         returns (bool)
     {
-        for (uint256 i = 1; i <= voterCount; i++) {
-            address addressAccount = voters[i].accountAddress;
+        for (uint256 i = 1; i <= candidateCount; i++) {
+            string memory partyName = candidates[i].party;
             if (
-                keccak256(abi.encodePacked(addressAccount)) ==
-                keccak256(abi.encodePacked(_inputAccountAddress))
+                keccak256(abi.encodePacked(partyName)) ==
+                keccak256(abi.encodePacked(_inputParty))
             ) {
                 return false;
                 break;
@@ -87,5 +53,5 @@ contract Election {
         return true;
     }
 
-    event voterCreated(string name, uint256 voterId, address accountAddress);
+    event CandidateCreated(string name, string party);
 }

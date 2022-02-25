@@ -12,22 +12,21 @@
     </div>
     <p id="accountAddress" class="text-center"></p>
     <hr>
-    <div id="voterContent">
+    <div id="candidateContent">
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Voter ID</th>
-                    <th scope="col">Account Address</th>
+                    <th scope="col">Party</th>
                 </tr>
             </thead>
-            <tbody id="voterRegistered"></tbody>
+            <tbody id="candidateRegistered"></tbody>
         </table>
     </div>
     <hr>
-    <form onSubmit="App.registerVoter(); return false;">
+    <form onSubmit="App.registerCandidate(); return false;">
         <input type="text" id="input-name" placeholder="Enter Name">
-        <input type="text" id="input-voterId" placeholder="Enter Voter ID">
+        <input type="text" id="input-party" placeholder="Enter Party Name">
         <button type="submit" class="btn btn-primary">Register</button>
     </form>
     
